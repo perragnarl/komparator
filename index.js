@@ -77,8 +77,8 @@ function navigateTo(url, page) {
 
 function takeScreenshot(page, pageName, fileName) {
   return new Promise((resolve, reject) => {
-    if (!fs.existsSync(`screenshots/${pageName}`, { recursive: true })) {
-      fs.mkdirSync(`screenshots/${pageName}`, { recursive: true });
+    if (!fs.existsSync(`./screenshots/${pageName}`, { recursive: true })) {
+      fs.mkdirSync(`./screenshots/${pageName}`, { recursive: true });
     }
 
     page
