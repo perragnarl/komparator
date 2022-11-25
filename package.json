@@ -1,6 +1,6 @@
 {
   "name": "komparator",
-  "version": "0.0.61",
+  "version": "0.0.62",
   "description": "",
   "main": "index.js",
   "repository": {
@@ -11,9 +11,16 @@
     "start": "node ."
   },
   "bin": "./index.js",
-  "keywords": [],
+  "keywords": [
+    "cli",
+    "compare tool",
+    "cli-tool",
+    "compare",
+    "compare urls",
+    "nodejs"
+  ],
   "author": "perragnarl",
-  "license": "ISC",
+  "license": "MIT",
   "type": "module",
   "dependencies": {
     "chalk": "^5.1.2",
