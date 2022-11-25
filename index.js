@@ -10,15 +10,15 @@ const file = await main();
 await theThing(file);
 
 async function main() {
-    console.log(chalk.bgYellow.black("\n Hi! \n\n"));
-    console.log(chalk.blackBright("The expected file is .json ex:\n"));
-    console.log(chalk.blackBright("["));
-    console.log(chalk.blackBright("  {"));
-    console.log(chalk.blackBright("    \"name\": \"pageName\","));
-    console.log(chalk.blackBright("    \"base\": \"https://www.example.com\","));
-    console.log(chalk.blackBright("    \"compare\": \"https://www.example.com\""));
-    console.log(chalk.blackBright("  }"));
-    console.log(chalk.blackBright("]\n"));
+  console.log(chalk.bgYellow.black("\n Hi! \n\n"));
+  console.log(chalk.blackBright("The expected file is .json ex:\n"));
+  console.log(chalk.blackBright("["));
+  console.log(chalk.blackBright("  {"));
+  console.log(chalk.blackBright('    "name": "pageName",'));
+  console.log(chalk.blackBright('    "base": "https://www.example.com",'));
+  console.log(chalk.blackBright('    "compare": "https://www.example.com"'));
+  console.log(chalk.blackBright("  }"));
+  console.log(chalk.blackBright("]\n"));
 
   const file = await inquirer.prompt({
     type: "input",
@@ -39,58 +39,57 @@ async function theThing(file) {
   for (let index = 0; index < urls.length; index++) {
     console.log(chalk.yellow("\n\nCreating base screenshot"));
     console.log(chalk.blackBright(`Navigating to ${urls[index].base}...`));
-    await navigateTo(urls[index].base, page);
-    console.log(chalk.blackBright(`Taking screenshot of ${urls[index].base}...`));
+    await navigateTo(urls[index].base, page, urls[index].wait);
+    console.log(
+      chalk.blackBright(`Taking screenshot of ${urls[index].base}...`)
+    );
     await takeScreenshot(page, urls[index].name, "base");
 
     console.log(chalk.yellow("\n\nCreating compare screenshot"));
     console.log(chalk.blackBright(`Navigating to ${urls[index].compare}...`));
-    await navigateTo(urls[index].compare, page);
-    console.log(chalk.blackBright(`Taking screenshot of ${urls[index].compare}...`));
+    await navigateTo(urls[index].compare, page, urls[index].wait);
+    console.log(
+      chalk.blackBright(`Taking screenshot of ${urls[index].compare}...`)
+    );
     await takeScreenshot(page, urls[index].name, "compare");
 
     console.log(chalk.yellow("\n\nCreating diff screenshot"));
-    await looksSame.createDiff({
-      reference: `screenshots/${urls[index].name}/base.png`,
-      current: `screenshots/${urls[index].name}/compare.png`,
-      diff: `screenshots/${urls[index].name}/diff.png`,
-      highlightColor: "#ff00ff", // color to highlight the differences
-      strict: true, // strict comparsion
-    });
+    await createDiffImage(urls[index].name);
     console.log(chalk.blackBright(`Diff created for ${urls[index].name}`));
   }
   await browser.close();
 }
 
-function navigateTo(url, page) {
-  return new Promise((resolve, reject) => {
-    page
-      .goto(url, { waitUntil: "networkidle2" })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+async function createDiffImage(name) {
+  await looksSame.createDiff({
+    reference: `screenshots/${name}/base.png`,
+    current: `screenshots/${name}/compare.png`,
+    diff: `screenshots/${name}/diff.png`,
+    highlightColor: "#ff00ff",
+    strict: true,
   });
 }
 
-function takeScreenshot(page, pageName, fileName) {
-  return new Promise((resolve, reject) => {
-    if (!fs.existsSync(`./screenshots/${pageName}`, { recursive: true })) {
-      fs.mkdirSync(`./screenshots/${pageName}`, { recursive: true });
-    }
+async function navigateTo(url, page, wait) {
+  await page.goto(url, { waitUntil: "networkidle2" });
 
-    page
-      .screenshot({
-        path: `screenshots/${pageName}/${fileName}.png`,
-        fullPage: true,
-      })
-      .then(() => {
-        resolve();
-      })
-      .catch((error) => {
-        reject(error);
-      });
+  if (wait) {
+    console.log(chalk.blackBright(`Waiting ${wait}s...`));
+    await sleep(wait);
+  }
+}
+
+function sleep(s) {
+  return new Promise((resolve) => setTimeout(resolve, s * 1000));
+}
+
+async function takeScreenshot(page, pageName, fileName) {
+  if (!fs.existsSync(`./screenshots/${pageName}`, { recursive: true })) {
+    fs.mkdirSync(`./screenshots/${pageName}`, { recursive: true });
+  }
+
+  await page.screenshot({
+    path: `screenshots/${pageName}/${fileName}.png`,
+    fullPage: true,
   });
 }
