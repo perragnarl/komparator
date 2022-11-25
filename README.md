@@ -4,7 +4,7 @@
 A simple tool that visits two urls and takes a screenshot of each. It then compares the two screenshots and outputs the difference.
 
 ## Why?
-The main reason for this tool is comparing two versions of a website during the migration from one version of a CMS to another.
+The main reason for building this tool is that I needed to compare two versions of a website during the migration from one version of a CMS to another.
 
 ## Prerequisites
 * [Node.js](https://nodejs.org/en/)
